@@ -2,7 +2,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 void func1() {
     while (1) {
@@ -14,7 +16,7 @@ void func1() {
 
 int main() {
     pid_t f1, f2, f3;
-
+    int status;
     printf("pai: pid %d ppid %d\n", getpid(), getppid());
 
     f1 = fork();
@@ -25,7 +27,13 @@ int main() {
 
     sleep(10);
 
+    waitpid(f1,&status,WNOHANG);
+
     // verifica se o processo filho acabou
+    if (WIFSIGNALED(status) == 0){
+        int ret = kill(f1, 9);
+    }
+
     // termine se ele nao tiver finalizado!
     
     return 0;
